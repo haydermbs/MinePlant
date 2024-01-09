@@ -23,11 +23,6 @@ class UPIT:
         t1 = time.time()
         print(t1-t0)
 
-        # self.precedence = Precedence(
-        #     1, 2, 3,
-        #     4, 5
-        # )
-
     def run(self):
         t0 = time.time()
 
@@ -45,7 +40,6 @@ class UPIT:
         # Mine-Plant constraints
         for i in self.dataset.blockId:
             self.model.addConstr(self.mine[i] >= self.plant[i])
-        self.model.write("segundo.lp")
 
         result = self.model.optimize()
         t2 = time.time()

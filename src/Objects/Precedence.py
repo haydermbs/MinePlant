@@ -62,4 +62,4 @@ class Precedence:
                 if (targetX, targetY, targetZ) in blockDictionary:
                     # print(blockId, type(blockId), targetX, type(targetX))
                     self.model.addConstr(
-                        self.mine[blockId] >= blockDictionary[(targetX, targetY, targetZ)])
+                        self.mine[blockId] >= self.mine[blockDictionary[(targetX, targetY, targetZ)]])
