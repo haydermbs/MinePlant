@@ -1,0 +1,62 @@
+import pandas as pd
+
+
+class Dataset:
+
+    def __init__(self, csvFile):
+        self.dataSet = pd.read_csv(csvFile)
+        self.blockLookup = self.createBlockLookup()
+
+    @property
+    def blockId(self):
+        return self.dataSet['id'].values
+
+    @property
+    def xCoord(self):
+        return self.dataSet['x'].values
+
+    @property
+    def yCoord(self):
+        return self.dataSet['y'].values
+
+    @property
+    def zCoord(self):
+        return self.dataSet['z'].values
+
+    @property
+    def tonnage(self):
+        return self.dataSet['tonn'].values
+
+    @property
+    def goldContent(self):
+        return self.dataSet['au [ppm]'].values
+
+    @property
+    def copperContent(self):
+        return self.dataSet['cu %'].values
+
+    @property
+    def profit(self):
+        return self.dataSet['proc_profit'].values
+
+    @property
+    def xAxis(self):
+        return list(range(self.dataSet['x'].min(), self.dataSet['x'].max() + 1))
+
+    @property
+    def yAxis(self):
+        return list(range(self.dataSet['y'].min(), self.dataSet['y'].max() + 1))
+
+    @property
+    def zAxis(self):
+        return list(range(self.dataSet['z'].min(), self.dataSet['z'].max() + 1))
+
+    def createBlockLookup(self):
+        blockLookup = {}
+        for idx, row in self.dataSet.iterrows():
+            coordinates = (int(row['x']), int(row['y']), int(row['z']))
+            blockLookup[coordinates] = int(row['id'])
+        return blockLookup
+
+    def getBlockId(self, x, y, z):
+        return self.blockLookup.get((int(x), int(y), int(z)), None)
