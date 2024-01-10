@@ -3,8 +3,16 @@ import pandas as pd
 
 class Dataset:
 
-    def __init__(self, csvFile):
-        self.dataSet = pd.read_csv(csvFile)
+    def __init__(self, *args, **kwargs):
+        if args and isinstance(args[0], str):
+            # If a string (file path) is provided as an argument
+            self.dataSet = pd.read_csv(args[0])
+        elif kwargs:
+            # If keyword arguments are provided (assuming these are columns)
+            self.dataSet = pd.DataFrame(kwargs)
+        else:
+            raise ValueError("Invalid arguments for Dataset initialization")
+
         self.blockLookup = self.createBlockLookup()
 
     @property

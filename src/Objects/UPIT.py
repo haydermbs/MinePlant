@@ -44,4 +44,18 @@ class UPIT:
         result = self.model.optimize()
         t2 = time.time()
         print(t2-t1)
+        minedBlocksIds = [self.dataset.blockId[i] for i in range(
+            len(self.dataset.blockId)) if self.mine[i].X == 1]
+        filtered_data = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
+            minedBlocksIds)]
+        self.newDF = {
+            'id': filtered_data['id'].tolist(),
+            'x': filtered_data['x'].tolist(),
+            'y': filtered_data['y'].tolist(),
+            'z': filtered_data['z'].tolist(),
+            'tonn': filtered_data['tonn'].tolist(),
+            'au [ppm]': filtered_data['au [ppm]'].tolist(),
+            'cu %': filtered_data['cu %'].tolist(),
+            'proc_profit': filtered_data['proc_profit'].tolist()
+        }
         return result
