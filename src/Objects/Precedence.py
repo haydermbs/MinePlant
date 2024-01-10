@@ -36,8 +36,6 @@ class Precedence:
             # If any neighbors are not in allPoints, it is a surface point
             if not all(neighbor in allPoints for neighbor in neighbors):
                 surfacePoints.append(point)
-        print(allPoints)
-        print(surfacePoints)
 
         return surfacePoints
 
@@ -47,6 +45,9 @@ class Precedence:
         # the inclination. It ensures safe and efficient mining operations.
 
         blockDictionary = self.dataset.createBlockLookup()
+        idToIndex = {blockId: index for index,
+                     blockId in enumerate(self.dataset.blockId)}
+
         restrictions_list = [
             [0, 0, 1], [-1, 0, 1], [0, -1, 1], [0, 1, 1], [1, 0, 1],
             [-2, -2, 3], [-2, 2, 3], [2, -2, 3], [2, 2, 3],
@@ -61,5 +62,8 @@ class Precedence:
                     coord[0], point[1] + coord[1], point[2] + coord[2]
                 if (targetX, targetY, targetZ) in blockDictionary:
                     # print(blockId, type(blockId), targetX, type(targetX))
+                    firstMineIndex = idToIndex[blockId]
+                    secondMineIndex = idToIndex[blockDictionary[(
+                        targetX, targetY, targetZ)]]
                     self.model.addConstr(
-                        self.mine[blockId] >= self.mine[blockDictionary[(targetX, targetY, targetZ)]])
+                        self.mine[firstMineIndex] >= self.mine[secondMineIndex])
