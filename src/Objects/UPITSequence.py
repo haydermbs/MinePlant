@@ -11,6 +11,7 @@ class UPITSequence:
         self.UPITParam = Parameters(
             parameters.inclinationLimit, None, None, parameters.reach)
         self.sequenceParam = parameters
+        self.summary = []
 
     def run(self):
         t0 = time.time()
@@ -18,17 +19,25 @@ class UPITSequence:
         self.upit.run()
         blocksMined = self.upit.getBlocksMined()
         blocksAvailable = blocksMined
-        self.sequences = {}
         count = 0
         while True:
-            self.sequences[count] = UPIT(
-                Dataset(blocksAvailable), self.sequenceParam)
-            self.sequences[count].run()
-            blocksAvailable = self.sequences[count].getNotMined()
-            if count > 1:
-                if self.sequences[count].model.objVal / sum(upit.model.objVal for upit in self.sequences.values()) < 0.01:
-                    break
+            upitInstance = UPIT(Dataset(blocksAvailable), self.sequenceParam)
+            upitInstance.run()
+            blocksAvailable = upitInstance.getNotMined()
+
+            # Store only relevant data instead of the entire UPIT model
+            iterationSummary = {
+                'iteration': count,
+                'blocksMined': upitInstance.getBlocksMined(),
+                'blocksToPlant': upitInstance.getBlocksToPlant(),
+                'objectiveValue': upitInstance.model.objVal
+            }
+            self.summary.append(iterationSummary)
+
+            if count > 1 and (iterationSummary['objectiveValue'] / sum(item['objectiveValue'] for item in self.summary) < 0.01):
+                break
             count += 1
+
         t1 = time.time()
         print(f"The code took {t1-t0} seconds to run!")
-        return self.sequences
+        return self.summary

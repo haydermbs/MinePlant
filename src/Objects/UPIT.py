@@ -12,23 +12,22 @@ class UPIT:
         self.parameters = parameters
         self.model = gp.Model()
 
-        # To make the model stop running when the increase is less than 0.1%
-        self.model.setParam('MIPGap', 0.01)
+        # To make the model stop running when the increase is less than 10%
+        self.model.setParam('MIPGap', 0.1)
 
         # Variables
         self.mine = [self.model.addVar(vtype='B') for i in dataset.blockId]
         self.plant = [self.model.addVar(vtype='B') for i in dataset.blockId]
 
         # Capacity constraints if applicable
-
         if self.parameters.annualMineCapacity:
             self.model.addConstr(gp.quicksum(
-                [self.dataset.tonnage[i]*self.mine[i] for i in range(len(self.dataset.dataSet))]) <= self.parameters.annualMineCapacity
+                [self.dataset.tonnage[i] * self.mine[i] for i in range(len(self.dataset.dataSet))]) <= self.parameters.annualMineCapacity
             )
 
         if self.parameters.annualPlantCapacity:
             self.model.addConstr(gp.quicksum(
-                [self.dataset.tonnage[i]*self.plant[i] for i in range(len(self.dataset.dataSet))]) <= self.parameters.annualPlantCapacity
+                [self.dataset.tonnage[i] * self.plant[i] for i in range(len(self.dataset.dataSet))]) <= self.parameters.annualPlantCapacity
             )
 
         # Initialize Precedence here
@@ -37,7 +36,7 @@ class UPIT:
             self.parameters.inclinationLimit, self.parameters.reach
         )
         t1 = time.time()
-        print(t1-t0)
+        print(t1 - t0)
 
     def run(self):
         t0 = time.time()
@@ -52,7 +51,7 @@ class UPIT:
         # Precedence constraints
         self.precedence.createPrecedenceConstraints()
         t1 = time.time()
-        print(t1-t0)
+        print(t1 - t0)
 
         # Mine-Plant constraints
         for idx, row in self.dataset.dataSet.iterrows():
@@ -60,36 +59,51 @@ class UPIT:
 
         result = self.model.optimize()
         t2 = time.time()
-        print(t2-t1)
+        print(t2 - t1)
 
         return result
 
     def getBlocksMined(self):
         minedBlocksIds = [self.dataset.blockId[i] for i in range(
             len(self.dataset.blockId)) if self.mine[i].X == 1]
-        filtered_data = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
+        filteredData = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
             minedBlocksIds)]
         self.blocksMined = pd.DataFrame({
-            'id': filtered_data['id'].tolist(),
-            'x': filtered_data['x'].tolist(),
-            'y': filtered_data['y'].tolist(),
-            'z': filtered_data['z'].tolist(),
-            'tonn': filtered_data['tonn'].tolist(),
-            'profit': filtered_data['profit'].tolist()
+            'id': filteredData['id'].tolist(),
+            'x': filteredData['x'].tolist(),
+            'y': filteredData['y'].tolist(),
+            'z': filteredData['z'].tolist(),
+            'tonn': filteredData['tonn'].tolist(),
+            'profit': filteredData['profit'].tolist()
         })
         return self.blocksMined
 
     def getNotMined(self):
         notMinedBlocksIds = [self.dataset.blockId[i] for i in range(
             len(self.dataset.blockId)) if self.mine[i].X == 0]
-        filtered_data = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
+        filteredData = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
             notMinedBlocksIds)]
         self.notMinedBlocks = pd.DataFrame({
-            'id': filtered_data['id'].tolist(),
-            'x': filtered_data['x'].tolist(),
-            'y': filtered_data['y'].tolist(),
-            'z': filtered_data['z'].tolist(),
-            'tonn': filtered_data['tonn'].tolist(),
-            'profit': filtered_data['profit'].tolist()
+            'id': filteredData['id'].tolist(),
+            'x': filteredData['x'].tolist(),
+            'y': filteredData['y'].tolist(),
+            'z': filteredData['z'].tolist(),
+            'tonn': filteredData['tonn'].tolist(),
+            'profit': filteredData['profit'].tolist()
         })
         return self.notMinedBlocks
+
+    def getBlocksToPlant(self):
+        plantBlocksIds = [self.dataset.blockId[i] for i in range(
+            len(self.dataset.blockId)) if self.plant[i].X == 1]
+        filteredData = self.dataset.dataSet[self.dataset.dataSet['id'].isin(
+            plantBlocksIds)]
+        self.blocksToPlant = pd.DataFrame({
+            'id': filteredData['id'].tolist(),
+            'x': filteredData['x'].tolist(),
+            'y': filteredData['y'].tolist(),
+            'z': filteredData['z'].tolist(),
+            'tonn': filteredData['tonn'].tolist(),
+            'profit': filteredData['profit'].tolist()
+        })
+        return self.blocksToPlant
