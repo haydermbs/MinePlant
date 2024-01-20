@@ -3,25 +3,43 @@ import pandas as pd
 
 class Dataset:
 
-    def __init__(self, *args, **kwargs):
-        if args:
-            if isinstance(args[0], str):
-                # If a string (file path) is provided as an argument
-                self.dataSet = pd.read_csv(args[0])
-            elif isinstance(args[0], pd.DataFrame):
-                # If a DataFrame is provided as an argument
-                self.dataSet = args[0]
+    def __init__(self, data, columnMap=None, hasHeaders=True):
+        """
+        Initializes the Dataset object with a given data and a column mapping.
+
+        :param data: The input dataset, can be a path to a CSV file or a DataFrame.
+        :param columnMap: Optional. A dictionary mapping from column indices to standard names.
+        :param hasHeaders: Boolean indicating whether the dataset has headers.
+        """
+        # Load dataset
+        if isinstance(data, str):
+            if hasHeaders:
+                self.dataSet = pd.read_csv(data)
             else:
-                raise ValueError(
-                    "Invalid argument type for Dataset initialization")
-        elif kwargs:
-            # If keyword arguments are provided (assuming these are columns)
-            self.dataSet = pd.DataFrame(kwargs)
+                self.dataSet = pd.read_csv(data, header=None)
+        elif isinstance(data, pd.DataFrame):
+            self.dataSet = data.copy()
         else:
             raise ValueError(
-                "No arguments provided for Dataset initialization")
+                "Invalid argument type for Dataset initialization")
 
+        # Process dataset based on column map
+        if columnMap is not None:
+            self.dataSet = self.processDataset(columnMap)
+
+        # Create block lookup
         self.blockLookup = self.createBlockLookup()
+
+    def processDataset(self, columnMap):
+        """
+        Processes the dataset by selecting and renaming columns based on the column map.
+
+        :param columnMap: A dictionary mapping from column indices to standard names.
+        :return: Processed DataFrame.
+        """
+        processedData = self.dataSet.iloc[:, list(columnMap.keys())]
+        processedData.columns = [columnMap[idx] for idx in columnMap]
+        return processedData
 
     @property
     def blockId(self):
@@ -44,16 +62,8 @@ class Dataset:
         return self.dataSet['tonn'].values
 
     @property
-    def goldContent(self):
-        return self.dataSet['au [ppm]'].values
-
-    @property
-    def copperContent(self):
-        return self.dataSet['cu %'].values
-
-    @property
     def profit(self):
-        return self.dataSet['proc_profit'].values
+        return self.dataSet['profit'].values
 
     @property
     def xAxis(self):

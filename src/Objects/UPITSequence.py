@@ -26,7 +26,7 @@ class UPITSequence:
             self.sequences[count].run()
             blocksAvailable = self.sequences[count].getNotMined()
             if count > 1:
-                if self.sequences[count].model.objVal / sum(upit.model.objVal for upit in self.sequences.values()) < 0.02:
+                if self.sequences[count].model.objVal / sum(upit.model.objVal for upit in self.sequences.values()) < 0.01:
                     break
             count += 1
         t1 = time.time()

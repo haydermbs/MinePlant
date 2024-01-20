@@ -19,7 +19,7 @@ class UPIT:
         self.mine = [self.model.addVar(vtype='B') for i in dataset.blockId]
         self.plant = [self.model.addVar(vtype='B') for i in dataset.blockId]
 
-        # Capacity constraints
+        # Capacity constraints if applicable
 
         if self.parameters.annualMineCapacity:
             self.model.addConstr(gp.quicksum(
@@ -75,9 +75,7 @@ class UPIT:
             'y': filtered_data['y'].tolist(),
             'z': filtered_data['z'].tolist(),
             'tonn': filtered_data['tonn'].tolist(),
-            'au [ppm]': filtered_data['au [ppm]'].tolist(),
-            'cu %': filtered_data['cu %'].tolist(),
-            'proc_profit': filtered_data['proc_profit'].tolist()
+            'profit': filtered_data['profit'].tolist()
         })
         return self.blocksMined
 
@@ -92,8 +90,6 @@ class UPIT:
             'y': filtered_data['y'].tolist(),
             'z': filtered_data['z'].tolist(),
             'tonn': filtered_data['tonn'].tolist(),
-            'au [ppm]': filtered_data['au [ppm]'].tolist(),
-            'cu %': filtered_data['cu %'].tolist(),
-            'proc_profit': filtered_data['proc_profit'].tolist()
+            'profit': filtered_data['profit'].tolist()
         })
         return self.notMinedBlocks
