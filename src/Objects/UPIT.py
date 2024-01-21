@@ -12,7 +12,7 @@ class UPIT:
         self.parameters = parameters
         self.model = gp.Model()
 
-        # To make the model stop running when the increase is less than 10%
+        # To make the model stop running when the increase is less than 0.1%
         self.model.setParam('MIPGap', 0.1)
 
         # Variables
@@ -36,15 +36,15 @@ class UPIT:
             self.parameters.inclinationLimit, self.parameters.reach
         )
         t1 = time.time()
-        print(t1 - t0)
+        print("Time spent initializing was: ", t1 - t0)
 
     def run(self):
         t0 = time.time()
 
         # Optimization objective
         self.model.setObjective(sum(
-            (self.plant[i] * self.dataset.profit[i] * self.dataset.tonnage[i]
-             - self.mine[i] * 0.9 * self.dataset.tonnage[i])
+            (self.plant[i] * self.dataset.profit[i]
+             - self.mine[i] * 0.9)
             for i in range(len(self.dataset.dataSet))
         ), gp.GRB.MAXIMIZE)
 
