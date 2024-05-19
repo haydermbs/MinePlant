@@ -36,7 +36,7 @@ class UPIT:
             self.parameters.inclinationLimit, self.parameters.reach
         )
         t1 = time.time()
-        print(t1 - t0)
+        # print(t1 - t0)
 
     def run(self):
         t0 = time.time()
@@ -51,7 +51,7 @@ class UPIT:
         # Precedence constraints
         self.precedence.createPrecedenceConstraints()
         t1 = time.time()
-        print(t1 - t0)
+        # print(t1 - t0)
 
         # Mine-Plant constraints
         for idx, row in self.dataset.dataSet.iterrows():
@@ -59,7 +59,7 @@ class UPIT:
 
         result = self.model.optimize()
         t2 = time.time()
-        print(t2 - t1)
+        # print(t2 - t1)
 
         return result
 

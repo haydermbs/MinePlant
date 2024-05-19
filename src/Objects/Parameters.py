@@ -1,5 +1,5 @@
 class Parameters:
-    def __init__(self, inclinationLimit, annualMineCapacity, annualPlantCapacity, reach):
+    def __init__(self, inclinationLimit=None, annualMineCapacity=None, annualPlantCapacity=None, reach=None):
         """
         Initializes the optimization parameters.
 

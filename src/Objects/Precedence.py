@@ -40,9 +40,10 @@ class Precedence:
         return surfacePoints
 
     def createPrecedenceConstraints(self):
-        # Create mining constraints based on the precedence rules. This involves determining
-        # which blocks in a mine can be mined given the spatial constraints imposed by
-        # the inclination. It ensures safe and efficient mining operations.
+        """
+        Create mining constraints based on the precedence rules. This involves determining
+        which blocks in a mine can be mined given the spatial constraints imposed by the inclination.
+        """
 
         blockDictionary = self.dataset.createBlockLookup()
         idToIndex = {blockId: index for index,
@@ -54,8 +55,9 @@ class Precedence:
             [4, -3, 5], [-4, 3, 5], [-3, -4, 5], [-3, 4, 5],
             [3, -4, 5], [3, 4, 5], [4, -3, 5], [4, 3, 5]
         ]
-        restraintCone = self.findPointsAboveInclination()
+        # restraintCone = self.findPointsAboveInclination()
         restraintCone = restrictions_list
+
         for coord, blockId in blockDictionary.items():
             for point in restraintCone:
                 targetX, targetY, targetZ = point[0] + \
